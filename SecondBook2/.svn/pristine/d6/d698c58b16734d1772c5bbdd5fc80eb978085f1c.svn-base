@@ -1,0 +1,111 @@
+package com.hautbook.register.Action;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.hautbook.DB.UserDAO;
+import com.hautbook.util.Validate;
+import com.opensymphony.xwork2.ActionSupport;
+
+
+/**
+ * 
+ * @author caiyao
+ *
+ * @function : 会员注册
+ */
+public class RegisterAction extends ActionSupport implements SessionAware{
+	private static final long serialVersionUID = 1L;
+	
+	private @Getter @Setter String dept ;//学院
+	private @Getter @Setter String name ;
+	private @Getter @Setter String password ;
+	private @Getter @Setter String repassword ;
+	private @Getter @Setter String email ;
+	private @Getter @Setter String captcha ;
+	private Map<String , Object> session  ;
+	private @Getter @Setter InputStream checkResult ;
+	private boolean validateSuccess = true ; // 标识是否校验成功
+	public void validate(){
+		try{
+			checkResult = new ByteArrayInputStream("success".getBytes("UTF-8"));
+			if(!Validate.validateDept(dept)){
+				checkResult = new ByteArrayInputStream("dapt".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!Validate.validateName(name)){
+				checkResult = new ByteArrayInputStream("name".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!validatePassword()){
+				checkResult = new ByteArrayInputStream("password".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!Validate.validateEmail(email)){
+				checkResult = new ByteArrayInputStream("email".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!validateCaptcha()){
+				checkResult = new ByteArrayInputStream("captcha".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+		}catch(UnsupportedEncodingException e){
+			// 不对 不支持编码异常 进行处理
+		}
+	}
+	/**
+	 * 校验验证码是否和session中的相同
+	 * @return
+	 */
+	private boolean validateCaptcha(){
+		String catpchaString = session.get("captchaString").toString() ;
+		session.remove("captchaString") ;// 校验完后就移除这个session值，使该验证码失效
+		return this.captcha.trim().toLowerCase().equals(catpchaString) ;
+	}
+	/**
+	 * 校验密码
+	 * 
+	 * @return
+	 */
+	private boolean validatePassword() {
+		password = password.trim() ;
+		repassword = repassword.trim() ;
+		if (Validate.validatePassword(password) && password.equals(repassword)) {
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session ;
+	}
+	public String execute() {
+		if(validateSuccess){
+			try{
+				UserDAO userdao = new UserDAO() ;
+				if(userdao.addUser(dept, name, password, email)){
+					return "tologin" ;
+				}else{
+					throw new SQLException("插入数据返回值不为1");
+				}
+			}catch(SQLException e){
+				return "error" ;
+			}
+		}else{
+			return "result" ;
+		}
+	}
+}

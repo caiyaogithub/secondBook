@@ -1,0 +1,70 @@
+package com.hautbook.util;
+/**
+ * 
+ * @author caiyao
+ *
+ * @function 执行对各种字段的校验 
+ *
+ */
+public class Validate {
+
+	/**
+	 * 校验学院是否存在
+	 * 
+	 * @return
+	 */
+	public static boolean validateDept(String dept) {
+		String[] depts = { "粮油食品学院", "机电工程学院", "土木建筑学院", "信息科学与工程学院", "化学化工学院",
+				"生物工程学院", "材料科学与工程学院", "电气工程学院", "管 理 学 院", "经济贸易学院", "理　学　院",
+				"外 语 学 院", "法　学　院", "新闻与传播学院", "设计艺术学院", "国际教育学院", "中英国际学院",
+				"职业技术学院", "体育学院", "思想政治教育学院", "继续教育学院" };
+		if(dept != null){
+			for (int i = 0; i < depts.length; i++) {
+				if (dept.equals(depts[i])) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 校验用户名是否正确
+	 * 
+	 * @return
+	 */
+	public static boolean validateName(String name ) {
+		/**
+		 * 只能包含字母和数字，长度为1~10字符（包括中文和英文字符）
+		 * 
+		 */
+		if(name != null){
+			String regex = "([\u4e00-\u9fa5]|[a-z]|[A-Z]|[0-9]){1,10}";
+			return name.matches(regex);
+		}
+		return false ;
+	}
+	/**
+	 * 校验 Email格式是否正确
+	 * @return
+	 */
+	public static boolean validateEmail(String email){
+		/**
+		 * email为可选字段
+		 */
+		/**
+		 * TODO email 正则表达式
+		 */
+		return true ;
+		}
+	/**
+	 * 校验密码
+	 * @param password
+	 * @return 如果密码校验成功返回true，否者返回false
+	 */
+	public static boolean validatePassword(String password){
+		/**数字和字符，区分大小写，6~20个字符**/
+		String regex = "([0-9]|[a-z]|[A-Z]){6,20}" ;
+		return password.matches(regex) ;
+	}
+}

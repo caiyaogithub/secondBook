@@ -1,0 +1,12 @@
+log4j.logger.com.hautbook=INFO,appender1,appender2
+
+### output to console ###
+log4j.appender.appender1=org.apache.log4j.ConsoleAppender
+log4j.appender.appender1.layout=org.apache.log4j.PatternLayout
+log4j.appender.appender1.layout.ConversionPattern=%d{yyyy MMM dd HH:mm:ss} ## [%t] ## %-5p ## %l ## %m%n
+
+### output to file ###
+log4j.appender.appender2=org.apache.log4j.FileAppender
+log4j.appender.appender2.layout=org.apache.log4j.PatternLayout
+log4j.appender.appender2.File=F:/myeclipseworkspace2/SecondBook2/log/secondbook.log
+log4j.appender.appender2.layout.ConversionPattern=%d{yyyy MMM dd HH:mm:ss} ## [%t] ## %-5p ## %l ## %m%n

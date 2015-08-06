@@ -1,0 +1,14 @@
+package com.hautbook.test;
+
+import org.apache.log4j.Logger;
+
+
+public class Test {
+public static void main(String[] args) throws Exception {
+	try{
+		throw new Exception("xxx");
+	}finally{
+		System.out.println("hello");
+	}
+}
+}

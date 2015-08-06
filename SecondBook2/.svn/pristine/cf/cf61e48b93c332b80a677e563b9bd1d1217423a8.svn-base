@@ -1,0 +1,55 @@
+package com.hautbook.JavaBean;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 
+ * @author caiyao 
+ *
+ * @function 存放发布信息
+ */
+public class PostBean {
+	@Getter @Setter private String userName ;
+	@Getter @Setter private String id ;
+	@Getter @Setter private String type ;
+	@Getter @Setter private String bookName ;
+	@Getter @Setter private String author ;
+	@Getter @Setter private String poster ;
+	@Getter @Setter private String isbn ;
+	@Getter @Setter private String category ;
+	@Getter @Setter private String desc ;
+	@Getter @Setter private float price ;
+	@Getter @Setter private String linkmanName ;
+	@Getter @Setter private String linkmanTel ;
+	@Getter @Setter private String status ;
+	public PostBean(String userName, String id, String type, String bookName,
+			String author, String poster, String isbn, String category,
+			String desc, float price, String linkmanName, String linkmanTel,
+			String status) {
+		super();
+		this.userName = userName;
+		this.id = id;
+		this.type = type;
+		this.bookName = bookName;
+		this.author = author;
+		this.poster = poster;
+		this.isbn = isbn;
+		this.category = category;
+		this.desc = desc;
+		this.price = price;
+		this.linkmanName = linkmanName;
+		this.linkmanTel = linkmanTel;
+		this.status = status;
+	}
+	@Override
+	public String toString() {
+		return "PostBean [userName=" + userName + ", id=" + id + ", type="
+				+ type + ", bookName=" + bookName + ", author=" + author
+				+ ", poster=" + poster + ", isbn=" + isbn + ", category="
+				+ category + ", desc=" + desc + ", price=" + price
+				+ ", linkmanName=" + linkmanName + ", linkmanTel=" + linkmanTel
+				+ ", status=" + status + "]";
+	}
+	
+}

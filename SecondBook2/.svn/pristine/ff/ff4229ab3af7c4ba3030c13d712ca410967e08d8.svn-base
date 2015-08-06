@@ -1,0 +1,13 @@
+package com.hautbook.test;
+
+import java.io.File;
+
+
+public class Test {
+public static void main(String[] args) throws Exception {
+	// 一个文件listFile会得到什么？
+	File file = new File("C:\\Users\\Administrator\\Desktop\\1.txt");
+	File[] files = file.listFiles() ;
+	System.out.println(files.length);
+}
+}

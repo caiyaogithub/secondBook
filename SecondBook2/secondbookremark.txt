@@ -1,0 +1,17 @@
+sessionListener并不能捕捉到当浏览器关闭时导致的session丢失
+所以要在js中对浏览器关闭时要发送下线请求
+当用户打开网站的任一页面时先判断session总是否有以"userName"为键的值，如果有表示已经登陆
+对该问题的解决：
+在前台尽量在浏览器关闭的时候提交下线请求，在服务器端对每一个登陆的用户设置一个计时器，到某个时间线没有操作就让其下线
+后台使用学院名+昵称的方式唯一确定一个登陆名
+
+
+正在进行publishPostAction,和PostBean，发现注册时没有使用UserBean ,修改注册代码，使用UserBean
+明天开始发布信息的提交处理~~~~~~~~~~~~~~~~~
+在sessionListener中出现java.lang.NoClassDefFoundError错误！ 解决
+plupload 方法中监听FileUpload事件，操作files数组，更改上传队列的顺序，这样可以实现第一张上传的图片作为封面
+对用户是否登陆的校验使用Servlet拦截器
+正在进行ImageUploadAction,不明白临时文件名是怎样生成的，不知道是用临时文件名好还是自己弄文件名好
+无法获取Struts.xml 中ognl表达式的值
+当服务器立即关闭是否会触发session监听器执行session消亡的处理事件  会
+正在写validatePost()方法~~~

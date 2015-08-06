@@ -1,0 +1,33 @@
+package com.hautbook.post.Action;
+
+import java.io.InputStream;
+
+import com.hautbook.util.Validate;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 
+ * @author caiyao
+ *
+ * @function : 会员的功能，用于发布信息。
+ * 
+ */
+public class PublishPostAction {
+	/***/
+	@Getter @Setter private String type ;
+	@Getter @Setter private String bookName ;
+	@Getter @Setter private String author ;
+	@Getter @Setter private String poster ;
+	@Getter @Setter private String isbn ;
+	@Getter @Setter private String category ;
+	@Getter @Setter private String desc ;
+	@Getter @Setter private float price ;
+	@Getter @Setter private String linkmanName ;
+	@Getter @Setter private String linkmanTel ;
+	@Getter @Setter private InputStream result ;
+	public void validate(){
+		
+	}
+}

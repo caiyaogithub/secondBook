@@ -1,0 +1,129 @@
+package com.hautbook.register.Action;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import org.apache.log4j.Logger;
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.hautbook.DB.UserDAO;
+import com.hautbook.JavaBean.UserBean;
+import com.hautbook.util.Password;
+import com.hautbook.util.Validate;
+import com.opensymphony.xwork2.ActionSupport;
+
+
+/**
+ * 
+ * @author caiyao
+ *
+ * @function : 会员注册
+ */
+public class RegisterAction extends ActionSupport implements SessionAware{
+	private static final long serialVersionUID = 1L;
+	
+	private @Getter @Setter String dept ;//学院
+	private @Getter @Setter String name ;
+	private @Getter @Setter String password ;
+	private @Getter @Setter String repassword ;
+	private @Getter @Setter String email ;
+	private @Getter @Setter String captcha ;
+	private Map<String , Object> session  ;
+	private @Getter @Setter InputStream checkResult ;
+	private boolean validateSuccess = true ; // 标识是否校验成功
+	public void validate(){
+		try{
+			checkResult = new ByteArrayInputStream("success".getBytes("UTF-8"));
+			if(!Validate.validateDept(dept)){
+				checkResult = new ByteArrayInputStream("dapt".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!Validate.validateName(name)){
+				checkResult = new ByteArrayInputStream("name".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!validatePassword()){
+				checkResult = new ByteArrayInputStream("password".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!Validate.validateEmail(email)){
+				checkResult = new ByteArrayInputStream("email".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+			if(!validateCaptcha()){
+				checkResult = new ByteArrayInputStream("captcha".getBytes("UTF-8")) ;
+				validateSuccess = false ;
+				return ;
+			}
+		}catch(UnsupportedEncodingException e){
+			// 不对不支持编码异常进行处理
+		}
+	}
+	/**
+	 * 校验验证码是否和session中的相同
+	 * @return
+	 */
+	private boolean validateCaptcha(){
+		String catpchaString = session.get("captchaString").toString() ;
+		session.remove("captchaString") ;// 校验完后就移除这个session值，使该验证码失效
+		return this.captcha.trim().toLowerCase().equals(catpchaString) ;
+	}
+	/**
+	 * 校验密码
+	 * 
+	 * @return
+	 */
+	private boolean validatePassword() {
+		password = password.trim() ;
+		repassword = repassword.trim() ;
+		if (Validate.validatePassword(password) && password.equals(repassword)) {
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session ;
+	}
+	public String execute() {
+		try{
+			// 判断数据库中是否已经存在该用户
+				if(!validateSuccess)return "result" ;
+				
+				UserDAO userdao = new UserDAO() ;
+				if(userdao.hasOne(dept, name)){
+					checkResult = new ByteArrayInputStream("exist".getBytes("UTF-8")) ;
+					return "result" ;
+				}
+				
+				UserBean user = null ;
+				user = new UserBean(dept , name , Password.getMD5(password) , email);
+				if(userdao.addUser(user)){
+					return "tologin" ;
+				}else{
+				    throw new SQLException("数据库异常，导致数据插入错误！");
+				}
+		}catch(SQLException | NoSuchAlgorithmException | UnsupportedEncodingException e ){
+				try {
+					checkResult = new ByteArrayInputStream("error".getBytes("UTF-8")) ;
+				} catch (UnsupportedEncodingException e1) {
+					/**
+					 * !!!! 编码不进行处理
+					 */
+					e1.printStackTrace(); 
+				}
+				return "result" ;
+		}
+	}
+}

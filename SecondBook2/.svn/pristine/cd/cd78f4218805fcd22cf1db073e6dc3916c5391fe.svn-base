@@ -1,0 +1,110 @@
+package com.hautbook.register.Action;
+
+import java.io.IOException;
+import java.util.Enumeration;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+import org.apache.log4j.Logger;
+
+import com.hautbook.util.FileUtils;
+
+
+
+
+
+/**
+ * 
+ * @author caiyao
+ *
+ * @function session监听器
+ *
+ */
+public class SessionListener implements HttpSessionAttributeListener , HttpSessionListener{
+	@Override
+	public void attributeAdded(HttpSessionBindingEvent addEvent) {
+		/**
+		 * 用户登录模块session，application中信息
+		 * session 中的格式为： "userName" : userName
+		 * application 中的格式为： userName : "login" 
+		 * 
+		 */
+		if(addEvent.getName().equals("userName")){
+			ServletContext application= addEvent.getSession().getServletContext() ;
+			application.setAttribute(addEvent.getValue().toString(),"login") ;
+			Logger.getLogger(this.getClass().getName()).info("成功将" + addEvent.getValue() + "信息添加到application中！") ;
+		}
+	}
+
+	@Override
+	public void attributeRemoved(HttpSessionBindingEvent removeEvent) {
+		if(removeEvent.getName().equals("userName")){
+			ServletContext application= removeEvent.getSession().getServletContext() ;
+			application.removeAttribute(removeEvent.getValue().toString()) ;
+			(Logger.getLogger(this.getClass().getName())).info("成功将该" + removeEvent.getValue() + "信息用户从application中移除！");
+		}
+	}
+
+	@Override
+	public void attributeReplaced(HttpSessionBindingEvent replaceEvent) {
+		if(replaceEvent.getName().equals("userName")){
+			ServletContext application= replaceEvent.getSession().getServletContext() ;
+			application.setAttribute(replaceEvent.getValue().toString(),"login") ;
+			(Logger.getLogger(this.getClass().getName())).info("替换application中" + replaceEvent.getValue() + "的值！");
+		}
+	}
+
+	@Override
+	public void sessionCreated(HttpSessionEvent createEvent) {
+		/***
+		 * session 创建时不做任何操作
+		 */
+		(Logger.getLogger(this.getClass().getName())).info("session 成功创建！");
+	}
+
+	@Override
+	public void sessionDestroyed(HttpSessionEvent destroyEvent) {
+		ServletContext application= destroyEvent.getSession().getServletContext() ;	
+		HttpSession session = destroyEvent.getSession() ;
+		Object userName = session.getAttribute("userName") ;
+		/**
+		 * 判断session中是否有以userName为键的值：
+		 * 如果有表示用户在session生命周期到达之前没有执行下线操作
+		 * 如果没有表示在session生命周期到达之前用户执行了下线操作
+		 * 
+		 * */
+		if(userName != null){
+			Logger.getLogger(this.getClass().getName()).info(userName + " session到期强制下线！");
+			application.removeAttribute(userName.toString()) ;
+		}else{
+			Logger.getLogger(this.getClass().getName()).info("session到期，但用户已经下线！");
+		}
+		
+		/**
+		 * 对于session中上传的临时图片信息的删除
+		 * session格式： "image" + 图片编号 : 临时图片文件的绝对路径
+		 * 1. 删除session中的条目
+		 * 2. 删除session对应的临时图片文件夹
+		 */
+		Enumeration<String> sessionAttrs = session.getAttributeNames() ;
+		String tempFolder = "" ;// 存放临时图片文件的文件夹
+		while(sessionAttrs.hasMoreElements()){
+			String sessionItem = sessionAttrs.nextElement() ;
+			// 下面这段代码其实只需要执行一遍，但是没想到什么好办法实现只执行一遍
+			String value = session.getAttribute(sessionItem).toString() ;
+			tempFolder = value.substring(0,value.lastIndexOf("/"))  ;
+			if(sessionItem.startsWith("image")){
+				session.removeAttribute(sessionItem) ;
+				Logger.getLogger(this.getClass().getName()).info(sessionItem + " 注销成功！");
+			}
+		}
+		FileUtils.deleteFolder( tempFolder );
+		Logger.getLogger(this.getClass().getName()).info(
+				"文件夹： " + tempFolder + "删除成功！");
+	}
+}

@@ -1,0 +1,11 @@
+package com.hautbook.post.Action;
+/**
+ * 
+ * @author caiyao
+ *
+ * @function : 会员的功能，用于发布信息。
+ * 
+ */
+public class PublishPostAction {
+
+}
